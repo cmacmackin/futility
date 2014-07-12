@@ -8,7 +8,10 @@
 !               subroutines in Numpy. Note: if using this module, do not use   !
 !               logical unit 90 for any IO, as it is reserved for use by these !
 !               subroutines. Lines in the filebeginning with the pound symbol  !
-!               (#) are considered comments and will not be read.              !
+!               (#) are considered comments and will not be read. Works for    !
+!               both integer and real data. Complex data IO has not yet been   !
+!               properly implemented.                                          !
+!                                                                              !
 !   CONTAINS:                                                                  !
 !   EXTERNALS:  None                                                           !
 !                                                                              !
@@ -22,6 +25,8 @@ MODULE array_io
     CHARACTER(LEN=64), PARAMETER    ::  allocate_err = '("ARRAY_IO: Array &
                                         &already allocated and NOCLOBBER & 
                                         &specified.")',                        &
+                                        empty_err = '("ARRAY_IO: No data in &
+                                        &file ",a,".")',                      &
                                         open_err = '("ARRAY_IO: Problem when & 
                                         &opening file. Error code ",I0,".")',  &
                                         read_err = '("ARRAY_IO: Problem reading&
@@ -43,12 +48,14 @@ MODULE array_io
     PUBLIC  :: loadtxt, savetxt
     
     INTERFACE loadtxt
-        MODULE PROCEDURE loadtxt_dynamic_c4
-        MODULE PROCEDURE loadtxt_dynamic_c8
+        !MODULE PROCEDURE loadtxt_dynamic_c8
+        !MODULE PROCEDURE loadtxt_dynamic_c16
         MODULE PROCEDURE loadtxt_dynamic_i2
         MODULE PROCEDURE loadtxt_dynamic_i4
         MODULE PROCEDURE loadtxt_dynamic_r4
         MODULE PROCEDURE loadtxt_dynamic_r8
+        !MODULE PROCEDURE loadtxt_static_c8
+        !MODULE PROCEDURE loadtxt_static_c16
         MODULE PROCEDURE loadtxt_static_i2
         MODULE PROCEDURE loadtxt_static_i4
         MODULE PROCEDURE loadtxt_static_r4
@@ -56,6 +63,8 @@ MODULE array_io
     END INTERFACE loadtxt
     
     INTERFACE savetxt
+        !MODULE PROCEDURE savetxt_c8
+        !MODULE PROCEDURE savetxt_c16
         MODULE PROCEDURE savetxt_i2
         MODULE PROCEDURE savetxt_i4
         MODULE PROCEDURE savetxt_r4
@@ -154,7 +163,7 @@ CONTAINS
 
     !==========================================================================!
     !                    B E G I N    S U B R O U T I N E :                    !
-    !                    L O A D T X T _ D Y N A M I C _ C 4                   !
+    !                   L O A D T X T _ D Y N A M I C _ C 1 6                  !
     !==========================================================================!
     !                                                                          !
     !   AUTHOR:         Christopher MacMackin                                  !
@@ -166,8 +175,8 @@ CONTAINS
     !                                                                          !
     !   ARGUMENTS:     *filename, the file from which to read in the array.    !
     !                       CHARACTER                                          !
-    !                   c4array_dyn, the allocatable array which is to be      !
-    !                       filled with data read in from the file. COMPLEX(4) !
+    !                   c16array_dyn, the allocatable array which is to be     !
+    !                       filled with data read from the file. COMPLEX(16)   !
     !                   [errval], returns any error codes generated during the !
     !                       execution of this subroutine. INTEGER              !
     !                  *[clobber = 'clobber'], determines whether to overwrite !
@@ -180,33 +189,33 @@ CONTAINS
     !   EXTERNALS:      file_size (subroutine)                                 !
     !                                                                          !
     !--------------------------------------------------------------------------!
-    SUBROUTINE loadtxt_dynamic_c4 ( filename, c4array_dyn, clobber, errval )
+    SUBROUTINE loadtxt_dynamic_c16 ( filename, c16array_dyn, clobber, errval )
         IMPLICIT NONE
         
         ! Input and output variables:
         CHARACTER(LEN=*), INTENT(IN)                            ::  filename
         CHARACTER(LEN=*), OPTIONAL, INTENT(IN)                  ::  clobber
         INTEGER, OPTIONAL, INTENT(OUT)                          ::  errval
-        COMPLEX(4), ALLOCATABLE, DIMENSION(:,:), INTENT(INOUT)  ::  c4array_dyn
+        COMPLEX(16), ALLOCATABLE, DIMENSION(:,:), INTENT(INOUT) ::  c16array_dyn
         
         ! Other variables
-        CHARACTER(LEN=line_len)                 ::  line,                      &
-                                                    tmp_char
-        INTEGER                                 ::  i,                         &
-                                                    ioerr,                     &
-                                                    ncols,                     &
-                                                    nrows,                     &
-                                                    nrows_old
-        COMPLEX(4), ALLOCATABLE, DIMENSION(:,:) ::  tmp
+        CHARACTER(LEN=line_len)                     ::  line,                  &
+                                                        tmp_char
+        INTEGER                                     ::  i,                     &
+                                                        ioerr,                 &
+                                                        ncols,                 &
+                                                        nrows,                 &
+                                                        nrows_old
+        COMPLEX(16), ALLOCATABLE, DIMENSION(:,:)    ::  tmp
     !--------------------------------------------------------------------------!
 
         ! Determine options for overwriting array
         IF ( PRESENT(clobber) ) THEN
             SELECT CASE (clobber)
                 CASE ( 'clobber' ) 
-                    IF ( ALLOCATED(c4array_dyn) ) DEALLOCATE(c4array_dyn)
+                    IF ( ALLOCATED(c16array_dyn) ) DEALLOCATE(c16array_dyn)
                 CASE ( 'noclobber' )
-                    IF ( ALLOCATED(c4array_dyn) ) THEN
+                    IF ( ALLOCATED(c16array_dyn) ) THEN
                         IF ( PRESENT(errval) ) THEN
                             errval = -6000
                             RETURN
@@ -216,9 +225,9 @@ CONTAINS
                         END IF
                     END IF
                 CASE ( 'append' )
-                    IF ( ALLOCATED(c4array_dyn) ) THEN
-                        tmp = c4array_dyn
-                        DEALLOCATE(c4array_dyn)
+                    IF ( ALLOCATED(c16array_dyn) ) THEN
+                        tmp = c16array_dyn
+                        DEALLOCATE(c16array_dyn)
                     END IF
                 CASE DEFAULT
                     IF ( PRESENT(errval) ) THEN
@@ -230,7 +239,7 @@ CONTAINS
                     END IF
             END SELECT
         ELSE
-            IF ( ALLOCATED(c4array_dyn) ) DEALLOCATE(c4array_dyn)
+            IF ( ALLOCATED(c16array_dyn) ) DEALLOCATE(c16array_dyn)
         END IF
 
         ! Open IO stream
@@ -249,6 +258,15 @@ CONTAINS
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
         ncols = ncols / 2
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -258,7 +276,7 @@ CONTAINS
         ELSE
             nrows_old = 0
         END IF
-        ALLOCATE(c4array_dyn(nrows,ncols))
+        ALLOCATE(c16array_dyn(nrows,ncols))
         
         ! Read in array
         REWIND(io_unit)
@@ -269,10 +287,10 @@ CONTAINS
             tmp_char = ADJUSTL(line(1:line_len-1)//com_char)
             IF ( tmp_char(1:1) /= com_char ) THEN
                 IF ( INDEX(line,com_char) == 0 ) THEN
-                    READ(UNIT=line, FMT=*, IOSTAT=ioerr) c4array_dyn(i,:)
+                    READ(UNIT=line, FMT=*, IOSTAT=ioerr) c16array_dyn(i,:)
                 ELSE
                     READ(UNIT=line(1:INDEX(line,com_char)-1), FMT=*,           &
-                      IOSTAT=ioerr) c4array_dyn(i,:)
+                      IOSTAT=ioerr) c16array_dyn(i,:)
                 END IF
                 i = i + 1
             END IF
@@ -289,7 +307,7 @@ CONTAINS
             
         ! Append to array, if necessary
         IF ( ALLOCATED(tmp) ) THEN
-            c4array_dyn(1:nrows_old,:) = tmp(:,:)
+            c16array_dyn(1:nrows_old,:) = tmp(:,:)
             DEALLOCATE(tmp)
         END IF
         
@@ -297,10 +315,10 @@ CONTAINS
         CLOSE( io_unit )
         
         RETURN
-    END SUBROUTINE loadtxt_dynamic_c4
+    END SUBROUTINE loadtxt_dynamic_c16
     !==========================================================================!
     !                      E N D    S U B R O U T I N E :                      !
-    !                    L O A D T X T _ D Y N A M I C _ C 4                   !
+    !                   L O A D T X T _ D Y N A M I C _ C 1 6                  !
     !==========================================================================!
 
 
@@ -401,6 +419,15 @@ CONTAINS
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
         ncols = ncols / 2
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -552,6 +579,15 @@ CONTAINS
         
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -703,6 +739,15 @@ CONTAINS
         
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -854,6 +899,15 @@ CONTAINS
         
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -1005,6 +1059,15 @@ CONTAINS
         
         ! Find number of rows and columns of data to collect.
         CALL file_size(nrows,ncols)
+        IF ( ncols == 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = -8000
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=empty_err) filename
+                STOP
+            END IF
+        END IF
         
         ! Allocate array to correct size
         IF ( ALLOCATED(tmp) ) THEN
@@ -1057,6 +1120,197 @@ CONTAINS
     !==========================================================================!
     !                      E N D    S U B R O U T I N E :                      !
     !                    L O A D T X T _ D Y N A M I C _ R 8                   !
+    !==========================================================================!
+
+
+    !==========================================================================!
+    !                    B E G I N    S U B R O U T I N E :                    !
+    !                    L O A D T X T _ S T A T I C _ C 8                     !
+    !==========================================================================!
+    !                                                                          !
+    !   AUTHOR:         Christopher MacMackin                                  !
+    !   WRITTEN:        July, 2014                                             !
+    !   MODIFICATIONS:  None                                                   !
+    !                                                                          !
+    !   PURPOSE:        Reads in an 8 byte complex 2D array whose dimensions   !
+    !                   are known in advance. Note that there is no way to     !
+    !                   know if some data was missed because the array was too !
+    !                   small.                                                 !
+    !                                                                          !
+    !   ARGUMENTS:     *filename, the file from which to read in the array.    !
+    !                       CHARACTER                                          !
+    !                   c8array, the array which is to be filled with values   !
+    !                       read in from the file. COMPLEX(8)                     !
+    !                   nrows, returns the number of rows of data which were   !
+    !                       read into the array. INTEGER                       !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
+    !                                                                          !
+    !   EXTERNALS:      None                                                   !
+    !                                                                          !
+    !--------------------------------------------------------------------------!
+    SUBROUTINE loadtxt_static_c8 ( filename, c8array, nrows, errval )
+        IMPLICIT NONE
+        
+        ! Input and output variables:
+        CHARACTER(LEN=*), INTENT(IN)            ::  filename
+        INTEGER, INTENT(OUT)                    ::  nrows
+        INTEGER, OPTIONAL, INTENT(OUT)          ::  errval
+        COMPLEX(8), DIMENSION(:,:), INTENT(OUT) ::  c8array
+        
+        ! Other variables:
+        CHARACTER(LEN=line_len) ::  line,                                      &
+                                    tmp_char
+        INTEGER                 ::  i,                                         &
+                                    ioerr
+    !--------------------------------------------------------------------------!
+        
+        ! Open IO stream
+        OPEN(UNIT=io_unit, FILE=TRIM(filename), ACTION='read', STATUS='old',   &
+             IOSTAT=ioerr)
+        IF ( ioerr /= 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = ioerr
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=open_err) ioerr
+                STOP
+            END IF
+        END IF
+                
+        i = 0
+        DO WHILE ( i < SIZE(c8array,1) )
+            READ(UNIT=io_unit, FMT='(A)', IOSTAT=ioerr) line
+            print*,line
+            IF ( ( ioerr == 5008 ) .OR. ( ioerr == -1 ) ) THEN
+                i = i + 1
+                EXIT
+            END IF
+            tmp_char = ADJUSTL(line(1:line_len-1)//com_char)
+            IF ( tmp_char(1:1) /= com_char ) THEN
+                i = i + 1
+                IF ( INDEX(line,com_char) == 0 ) THEN
+                    READ(UNIT=line, FMT=*, IOSTAT=ioerr) c8array(i,:)
+                ELSE
+                    READ(UNIT=line(1:INDEX(line,com_char)-1), FMT=*,           &
+                      IOSTAT=ioerr) c8array(i,:)
+                END IF
+            END IF
+            IF ( ( ioerr /= 0 ) .AND. ( ioerr /= -1 ) ) THEN
+                IF ( PRESENT(errval) ) THEN
+                    errval = ioerr
+                    RETURN
+                ELSE
+                    WRITE(UNIT=stderr, FMT=read_err) ioerr
+                    STOP
+                END IF
+            END IF
+        END DO
+        nrows = i
+
+        ! Close IO stream
+        CLOSE( io_unit )
+
+        RETURN
+    END SUBROUTINE loadtxt_static_c8
+    !==========================================================================!
+    !                      E N D    S U B R O U T I N E :                      !
+    !                    L O A D T X T _ S T A T I C _ C 8                     !
+    !==========================================================================!
+
+
+    !==========================================================================!
+    !                    B E G I N    S U B R O U T I N E :                    !
+    !                   L O A D T X T _ S T A T I C _ C 1 6                    !
+    !==========================================================================!
+    !                                                                          !
+    !   AUTHOR:         Christopher MacMackin                                  !
+    !   WRITTEN:        July, 2014                                             !
+    !   MODIFICATIONS:  None                                                   !
+    !                                                                          !
+    !   PURPOSE:        Reads in a 16 byte complex 2D array whose dimensions   !
+    !                   are known in advance. Note that there is no way to     !
+    !                   know if some data was missed because the array was too !
+    !                   small.                                                 !
+    !                                                                          !
+    !   ARGUMENTS:     *filename, the file from which to read in the array.    !
+    !                       CHARACTER                                          !
+    !                   c16array, the array which is to be filled with values  !
+    !                       read in from the file. COMPLEX(16)                 !
+    !                   nrows, returns the number of rows of data which were   !
+    !                       read into the array. INTEGER                       !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
+    !                                                                          !
+    !   EXTERNALS:      None                                                   !
+    !                                                                          !
+    !--------------------------------------------------------------------------!
+    SUBROUTINE loadtxt_static_c16 ( filename, c16array, nrows, errval )
+        IMPLICIT NONE
+        
+        ! Input and output variables:
+        CHARACTER(LEN=*), INTENT(IN)                ::  filename
+        INTEGER, INTENT(OUT)                        ::  nrows
+        INTEGER, OPTIONAL, INTENT(OUT)              ::  errval
+        COMPLEX(16), DIMENSION(:,:), INTENT(OUT)    ::  c16array
+        
+        ! Other variables:
+        CHARACTER(LEN=line_len) ::  line,                                      &
+                                    tmp_char
+        INTEGER                 ::  i,                                         &
+                                    ioerr
+    !--------------------------------------------------------------------------!
+        
+        ! Open IO stream
+        OPEN(UNIT=io_unit, FILE=TRIM(filename), ACTION='read', STATUS='old',   &
+             IOSTAT=ioerr)
+        IF ( ioerr /= 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = ioerr
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=open_err) ioerr
+                STOP
+            END IF
+        END IF
+                
+        i = 0
+        DO WHILE ( i < SIZE(c16array,1) )
+            READ(UNIT=io_unit, FMT='(A)', IOSTAT=ioerr) line
+            IF ( ( ioerr == 5008 ) .OR. ( ioerr == -1 ) ) THEN
+                i = i + 1
+                EXIT
+            END IF
+            tmp_char = ADJUSTL(line(1:line_len-1)//com_char)
+            IF ( tmp_char(1:1) /= com_char ) THEN
+                i = i + 1
+                IF ( INDEX(line,com_char) == 0 ) THEN
+                    READ(UNIT=line, FMT=*, IOSTAT=ioerr) c16array(i,:)
+                ELSE
+                    READ(UNIT=line(1:INDEX(line,com_char)-1), FMT=*,           &
+                      IOSTAT=ioerr) c16array(i,:)
+                END IF
+            END IF
+            IF ( ( ioerr /= 0 ) .AND. ( ioerr /= -1 ) ) THEN
+                IF ( PRESENT(errval) ) THEN
+                    errval = ioerr
+                    RETURN
+                ELSE
+                    WRITE(UNIT=stderr, FMT=read_err) ioerr
+                    STOP
+                END IF
+            END IF
+        END DO
+        nrows = i-1
+
+        ! Close IO stream
+        CLOSE( io_unit )
+
+        RETURN
+    END SUBROUTINE loadtxt_static_c16
+    !==========================================================================!
+    !                      E N D    S U B R O U T I N E :                      !
+    !                   L O A D T X T _ S T A T I C _ C 1 6                    !
     !==========================================================================!
 
 
@@ -1442,6 +1696,260 @@ CONTAINS
 
     !==========================================================================!
     !                    B E G I N    S U B R O U T I N E :                    !
+    !                           S A V E T X T _ C 8                            !
+    !==========================================================================!
+    !                                                                          !
+    !   AUTHOR:         Christopher MacMackin                                  !
+    !   WRITTEN:        July, 2014                                             !
+    !   MODIFICATIONS:  None                                                   !
+    !                                                                          !
+    !   PURPOSE:        Writes out an 8 byte complex 2D array.                 !
+    !                                                                          !
+    !   ARGUMENTS:     *filename, the file to which to write in the array. If  !
+    !                       it is 'stdout' then writes to terminal instead of  !
+    !                       file. CHARACTER                                    !
+    !                   c8array, the array which is to be written to the file. !
+    !                       COMPLEX(8)                                         !
+    !                  *[clobber = 'clobber'], determines whether to overwrite !
+    !                       existing files. Options are 'clobber' (overwrite   !
+    !                       file if exists), 'noclobber' (produce error if     !
+    !                       file exists), and 'append' (append output to file  !
+    !                       if exists). CHARACTER                              !
+    !                  *[user_format], a format string which can be used to    !
+    !                       provide a custom specification for the array       !
+    !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
+    !                                                                          !
+    !   EXTERNALS:      None                                                   !
+    !                                                                          !
+    !--------------------------------------------------------------------------!
+    SUBROUTINE savetxt_c8 ( filename, c8array, clobber, user_format, errval )
+        IMPLICIT NONE
+        
+        ! Input and output variables:
+        CHARACTER(LEN=*), INTENT(IN)                    ::  filename
+        CHARACTER(LEN=*), OPTIONAL, INTENT(IN)          ::  clobber,           &
+                                                            user_format
+        COMPLEX(8), DIMENSION(:,:), TARGET, INTENT(IN)  ::  c8array
+        INTEGER, OPTIONAL, INTENT(OUT)                  ::  errval
+        
+        ! Other variables:
+        CHARACTER(LEN=8)                ::  file_pos,                          &
+                                            file_stat
+        CHARACTER(LEN=128)              ::  u_format
+        CHARACTER(LEN=16), PARAMETER    ::  def_form = '(*(g26.18))'
+        INTEGER                         ::  i,                                 &
+                                            ioerr,                             &
+                                            out_unit
+    !--------------------------------------------------------------------------!
+        
+        ! Determine options for opening file
+        IF ( PRESENT(clobber) ) THEN
+            SELECT CASE (clobber)
+                CASE ('clobber') 
+                    file_pos = 'asis'
+                    file_stat = 'replace'
+                CASE ('noclobber')
+                    file_pos = 'asis'
+                    file_stat = 'new'
+                CASE ('append')
+                    file_pos = 'append'
+                    file_stat = 'unknown'
+                CASE DEFAULT
+                    IF ( PRESENT(errval) ) THEN
+                        errval = -5000
+                        RETURN
+                    ELSE
+                        WRITE(UNIT=stderr, FMT=clob_err)
+                        STOP
+                    END IF
+            END SELECT
+        ELSE
+            file_pos = 'asis'
+            file_stat = 'replace'
+        END IF
+        
+        ! Determine whether to use a user-supplied format string
+        IF ( PRESENT(user_format) ) THEN
+            u_format = user_format
+        ELSE
+            u_format = def_form
+        END IF
+        
+        ! Open IO stream
+        IF ( TRIM(filename) == 'stdout' ) THEN
+            out_unit = stdout
+            ioerr = 0
+        ELSE
+            out_unit = io_unit
+            OPEN(UNIT=out_unit, FILE=TRIM(filename), ACTION='write',           &
+                 IOSTAT=ioerr, STATUS=file_stat, POSITION=file_pos)
+        END IF
+        IF ( ioerr /= 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = ioerr
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=open_err) ioerr
+                STOP
+            END IF
+        END IF
+        
+        ! Write out array
+        DO i = 1, SIZE(c8array,1)
+            WRITE(UNIT=out_unit, FMT=u_format, IOSTAT=ioerr) c8array(i,:)
+            IF ( ioerr /= 0 ) THEN
+                IF ( PRESENT(errval) ) THEN
+                    errval = ioerr
+                    RETURN
+                ELSE
+                    WRITE(UNIT=stderr, FMT=write_err) ioerr
+                    STOP
+                END IF
+            END IF
+        END DO
+        
+        ! Clean up
+        IF ( TRIM(filename) /= 'stdout' ) CLOSE( io_unit )
+
+        RETURN
+    END SUBROUTINE savetxt_c8
+    !==========================================================================!
+    !                      E N D    S U B R O U T I N E :                      !
+    !                           S A V E T X T _ C 8                            !
+    !==========================================================================!
+
+
+    !==========================================================================!
+    !                    B E G I N    S U B R O U T I N E :                    !
+    !                          S A V E T X T _ C 1 6                           !
+    !==========================================================================!
+    !                                                                          !
+    !   AUTHOR:         Christopher MacMackin                                  !
+    !   WRITTEN:        July, 2014                                             !
+    !   MODIFICATIONS:  None                                                   !
+    !                                                                          !
+    !   PURPOSE:        Writes out a 16 byte complex 2D array.                 !
+    !                                                                          !
+    !   ARGUMENTS:     *filename, the file to which to write in the array. If  !
+    !                       it is 'stdout' then writes to terminal instead of  !
+    !                       file. CHARACTER                                    !
+    !                   c16array, the array which is to be written to the      !
+    !                       file. COMPLEX(16)                                  !
+    !                  *[clobber = 'clobber'], determines whether to overwrite !
+    !                       existing files. Options are 'clobber' (overwrite   !
+    !                       file if exists), 'noclobber' (produce error if     !
+    !                       file exists), and 'append' (append output to file  !
+    !                       if exists). CHARACTER                              !
+    !                  *[user_format], a format string which can be used to    !
+    !                       provide a custom specification for the array       !
+    !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
+    !                                                                          !
+    !   EXTERNALS:      None                                                   !
+    !                                                                          !
+    !--------------------------------------------------------------------------!
+    SUBROUTINE savetxt_c16 ( filename, c16array, clobber, user_format, errval )
+        IMPLICIT NONE
+        
+        ! Input and output variables:
+        CHARACTER(LEN=*), INTENT(IN)                    ::  filename
+        CHARACTER(LEN=*), OPTIONAL, INTENT(IN)          ::  clobber,           &
+                                                            user_format
+        COMPLEX(16), DIMENSION(:,:), TARGET, INTENT(IN) ::  c16array
+        INTEGER, OPTIONAL, INTENT(OUT)                  ::  errval
+        
+        ! Other variables:
+        CHARACTER(LEN=8)                ::  file_pos,                          &
+                                            file_stat
+        CHARACTER(LEN=128)              ::  u_format
+        CHARACTER(LEN=16), PARAMETER    ::  def_form = '(*(g26.18))'
+        INTEGER                         ::  i,                                 &
+                                            ioerr,                             &
+                                            out_unit
+    !--------------------------------------------------------------------------!
+        
+        ! Determine options for opening file
+        IF ( PRESENT(clobber) ) THEN
+            SELECT CASE (clobber)
+                CASE ('clobber') 
+                    file_pos = 'asis'
+                    file_stat = 'replace'
+                CASE ('noclobber')
+                    file_pos = 'asis'
+                    file_stat = 'new'
+                CASE ('append')
+                    file_pos = 'append'
+                    file_stat = 'unknown'
+                CASE DEFAULT
+                    IF ( PRESENT(errval) ) THEN
+                        errval = -5000
+                        RETURN
+                    ELSE
+                        WRITE(UNIT=stderr, FMT=clob_err)
+                        STOP
+                    END IF
+            END SELECT
+        ELSE
+            file_pos = 'asis'
+            file_stat = 'replace'
+        END IF
+        
+        ! Determine whether to use a user-supplied format string
+        IF ( PRESENT(user_format) ) THEN
+            u_format = user_format
+        ELSE
+            u_format = def_form
+        END IF
+        
+        ! Open IO stream
+        IF ( TRIM(filename) == 'stdout' ) THEN
+            out_unit = stdout
+            ioerr = 0
+        ELSE
+            out_unit = io_unit
+            OPEN(UNIT=out_unit, FILE=TRIM(filename), ACTION='write',           &
+                 IOSTAT=ioerr, STATUS=file_stat, POSITION=file_pos)
+        END IF
+        IF ( ioerr /= 0 ) THEN
+            IF ( PRESENT(errval) ) THEN
+                errval = ioerr
+                RETURN
+            ELSE
+                WRITE(UNIT=stderr, FMT=open_err) ioerr
+                STOP
+            END IF
+        END IF
+        
+        ! Write out array
+        DO i = 1, SIZE(c16array,1)
+            WRITE(UNIT=out_unit, FMT=u_format, IOSTAT=ioerr) c16array(i,:)
+            IF ( ioerr /= 0 ) THEN
+                IF ( PRESENT(errval) ) THEN
+                    errval = ioerr
+                    RETURN
+                ELSE
+                    WRITE(UNIT=stderr, FMT=write_err) ioerr
+                    STOP
+                END IF
+            END IF
+        END DO
+        
+        ! Clean up
+        IF ( TRIM(filename) /= 'stdout' ) CLOSE( io_unit )
+
+        RETURN
+    END SUBROUTINE savetxt_c16
+    !==========================================================================!
+    !                      E N D    S U B R O U T I N E :                      !
+    !                          S A V E T X T _ C 1 6                           !
+    !==========================================================================!
+
+
+    !==========================================================================!
+    !                    B E G I N    S U B R O U T I N E :                    !
     !                           S A V E T X T _ I 2                            !
     !==========================================================================!
     !                                                                          !
@@ -1456,8 +1964,6 @@ CONTAINS
     !                       file. CHARACTER                                    !
     !                   i2array, the array which is to be written to the file. !
     !                       INTEGER(2)                                         !
-    !                   [errval], returns any error codes generated during the !
-    !                       execution of this subroutine. INTEGER              !
     !                  *[clobber = 'clobber'], determines whether to overwrite !
     !                       existing files. Options are 'clobber' (overwrite   !
     !                       file if exists), 'noclobber' (produce error if     !
@@ -1466,11 +1972,13 @@ CONTAINS
     !                  *[user_format], a format string which can be used to    !
     !                       provide a custom specification for the array       !
     !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
     !                                                                          !
     !   EXTERNALS:      None                                                   !
     !                                                                          !
     !--------------------------------------------------------------------------!
-    SUBROUTINE savetxt_i2 ( filename, i2array, errval, clobber, user_format )
+    SUBROUTINE savetxt_i2 ( filename, i2array, clobber, user_format, errval )
         IMPLICIT NONE
         
         ! Input and output variables:
@@ -1583,8 +2091,6 @@ CONTAINS
     !                       file. CHARACTER                                    !
     !                   i4array, the array which is to be written to the file. !
     !                       INTEGER(4)                                         !
-    !                   [errval], returns any error codes generated during the !
-    !                       execution of this subroutine. INTEGER              !
     !                  *[clobber = 'clobber'], determines whether to overwrite !
     !                       existing files. Options are 'clobber' (overwrite   !
     !                       file if exists), 'noclobber' (produce error if     !
@@ -1593,11 +2099,13 @@ CONTAINS
     !                  *[user_format], a format string which can be used to    !
     !                       provide a custom specification for the array       !
     !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
     !                                                                          !
     !   EXTERNALS:      None                                                   !
     !                                                                          !
     !--------------------------------------------------------------------------!
-    SUBROUTINE savetxt_i4 ( filename, i4array, errval, clobber, user_format )
+    SUBROUTINE savetxt_i4 ( filename, i4array, clobber, user_format, errval )
         IMPLICIT NONE
         
         ! Input and output variables:
@@ -1710,8 +2218,6 @@ CONTAINS
     !                       file. CHARACTER                                    !
     !                   r4array, the array which is to be written to the file. !
     !                       REAL(4)                                            !
-    !                   [errval], returns any error codes generated during the !
-    !                       execution of this subroutine. INTEGER              !
     !                  *[clobber = 'clobber'], determines whether to overwrite !
     !                       existing files. Options are 'clobber' (overwrite   !
     !                       file if exists), 'noclobber' (produce error if     !
@@ -1720,11 +2226,13 @@ CONTAINS
     !                  *[user_format], a format string which can be used to    !
     !                       provide a custom specification for the array       !
     !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
     !                                                                          !
     !   EXTERNALS:      None                                                   !
     !                                                                          !
     !--------------------------------------------------------------------------!
-    SUBROUTINE savetxt_r4 ( filename, r4array, errval, clobber, user_format )
+    SUBROUTINE savetxt_r4 ( filename, r4array, clobber, user_format, errval )
         IMPLICIT NONE
         
         ! Input and output variables:
@@ -1837,8 +2345,6 @@ CONTAINS
     !                       file. CHARACTER                                    !
     !                   r8array, the array which is to be written to the file. !
     !                       REAL(8)                                            !
-    !                   [errval], returns any error codes generated during the !
-    !                       execution of this subroutine. INTEGER              !
     !                  *[clobber = 'clobber'], determines whether to overwrite !
     !                       existing files. Options are 'clobber' (overwrite   !
     !                       file if exists), 'noclobber' (produce error if     !
@@ -1847,11 +2353,13 @@ CONTAINS
     !                  *[user_format], a format string which can be used to    !
     !                       provide a custom specification for the array       !
     !                       output. CHARACTER                                  !
+    !                   [errval], returns any error codes generated during the !
+    !                       execution of this subroutine. INTEGER              !
     !                                                                          !
     !   EXTERNALS:      None                                                   !
     !                                                                          !
     !--------------------------------------------------------------------------!
-    SUBROUTINE savetxt_r8 ( filename, r8array, errval, clobber, user_format )
+    SUBROUTINE savetxt_r8 ( filename, r8array, clobber, user_format, errval )
         IMPLICIT NONE
         
         ! Input and output variables:
@@ -1952,16 +2460,3 @@ END MODULE array_io
 !                            E N D    M O D U L E :                            !
 !                               A R R A Y _ I O                                !
 !==============================================================================!
-
-!TODO: fix the dynamic reader so that it will produce an error message if it encounters an empty file
-program test
-    use array_io
-    implicit none
-    integer, dimension(7,2) :: array
-    integer :: col, row
-    character(len=8) :: fname = 'test.dat'
-    
-    call loadtxt(fname, array,row)!, errval)
-    call savetxt('stdout',array)
-    print*,row
-end program 
