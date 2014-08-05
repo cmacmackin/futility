@@ -239,6 +239,7 @@ CONTAINS
     !   EXTERNALS:      None.                                          !
     !                                                                  !
     !------------------------------------------------------------------!
+    ! TODO: fix this so that it actually takes fewer iterations than the bisection-secant hybrid.
     SUBROUTINE brentmul ( error   , fnctn   , maxerr  , maxsteps,      &
                           steps   , verbose , xcur    , xleft   ,      &
                           xright   )
@@ -267,7 +268,7 @@ CONTAINS
         REAL(8) ::  aval = 0.d0,                                       &
                     bval = 0.d0,                                       &
                     cval = 0.d0,                                       &
-                    denom = 0.d0,                                      &
+                    invdenom = 0.d0,                                   &
                     fxcur = 0.d0,                                      &
                     fxleft = 0.d0,                                     &
                     fxprev1 = 0.d0,                                    &
@@ -288,7 +289,7 @@ CONTAINS
             RETURN
         END IF
         
-        ! Initialize variables, get use bisection to estimate root for
+        ! Initialize variables, use bisection to estimate root for
         ! first iteration
         steps = 1
         xcur = xleft
@@ -322,28 +323,28 @@ CONTAINS
             END IF
             
             ! Fit a quadratic to previous 3 points
-            denom = (xprev2 - xprev1) * (xprev2 - xcur) *              &
-                    (xprev1 - xcur)
+            invdenom = 1.d0 / ( (xprev2 - xprev1) * (xprev2 - xcur) *  &
+                    (xprev1 - xcur) )
             aval = ((xprev1 - xcur) * (fxprev2 - fxcur) -              &
-                 (xprev2 - xcur) * (fxprev1 - fxcur)) / denom
+                 (xprev2 - xcur) * (fxprev1 - fxcur)) * invdenom
             bval = ((xprev2 - xcur)**2 * (fxprev1 - fxcur) -           &
-                 (xprev1 - xcur)**2 * (fxprev2 - fxcur)) / denom
+                 (xprev1 - xcur)**2 * (fxprev2 - fxcur)) * invdenom
             cval = fxcur
 
             ! Find root of quadratic within range and use that as
             ! next estimate of fnctn's root.
             IF ( bval < 0.d0 ) THEN
-                xnext = xcur + 2.d0*cval / (-bval + SQRT(bval**2.d0 -  &
+                xnext = xcur + 2.d0*cval / (-bval + SQRT(bval**2 -     &
                         4.d0*aval*cval))
             ELSE
-                xnext = xcur - 2.d0*cval / (bval + SQRT(bval**2.d0 -   &
+                xnext = xcur - 2.d0*cval / (bval + SQRT(bval**2 -      &
                         4.d0*aval*cval))
             END IF
 
             ! If this 'xnext' value is outside of left or right bounds 
             ! or is NaN, instead use a bisection to find 'xnext'
-            IF ( ( xnext < xleft ) .OR. ( xnext > xright ) .OR.        &
-                 ( xnext /= xnext ) ) THEN
+            IF ( ( xnext < xleft ) .OR. ( xnext > xright ) ) THEN!.OR.        &
+!                 ( xnext /= xnext ) ) THEN
                 xnext = 5.d-1 * (xleft + xright)
                 IF ( verbose .EQV. .TRUE. ) WRITE( 6,2010) steps, xnext
             ELSE IF (verbose .EQV. .TRUE. ) THEN

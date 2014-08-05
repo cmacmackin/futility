@@ -74,7 +74,6 @@ MODULE array_io
 !------------------------------------------------------------------------------!
 CONTAINS
 
-! TODO: consider allowing some lines of the file to be commented out.
     !==========================================================================!
     !                    B E G I N    S U B R O U T I N E :                    !
     !                             F I L E _ S I Z E                            !
@@ -117,7 +116,7 @@ CONTAINS
         ! Initialize variables
         nrows = 0
         ncols = 0
-        tmp = '#'
+        tmp = com_char
         
         ! Read in first non-blank, non-comment row
         DO WHILE ( tmp(1:1) == com_char )

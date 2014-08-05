@@ -4,7 +4,7 @@
 !======================================================================!
 !                                                                      !
 !   PURPOSE:    Performs calculus functions.                           !
-!   CONTAINS:   rederiv (subroutine), romberg (subroutine)            !
+!   CONTAINS:   rederiv (subroutine), romberg (subroutine)             !
 !   EXTERNALS:  none                                                   !
 !                                                                      !
 !----------------------------------------------------------------------!
@@ -225,8 +225,8 @@ CONTAINS
     !   EXTERNALS:      None                                           !
     !                                                                  !
     !------------------------------------------------------------------!
-    SUBROUTINE romberg ( intval  , error   , func    , iter1   ,      &
-                         left    , numcalls, right   , tol     ,      &
+    SUBROUTINE romberg ( intval  , error   , func    , iter1   ,       &
+                         left    , numcalls, right   , tol     ,       &
                          verbose  )
         IMPLICIT NONE
         
@@ -305,21 +305,23 @@ CONTAINS
         
         ! Perform iteration with Richardson Extrapolation
         IF ( verbose ) WRITE( 6,2010)
-        IF ( verbose ) WRITE( 6,2020) mval, new(0)
-        new(1) = (4.d0*new(0) - old(0))/3.d0
-        IF ( verbose ) WRITE( 6,2020) mval, new(0:1)        
+        IF ( verbose ) WRITE( 6,2020) (mval - 1), new(0)
         DO iter1 = 2,imax
-            old(0) = new(0)
-            CALL update()
-            
-            ! Refine the estimate of the integral
-            fact = 1.d0
-            DO iter2 = 1,iter1
-                fact = fact*base
-                old(iter2) = new(iter2)
-                new(iter2) = (fact*new(iter2-1) - old(iter2-1))/       &
-                             (fact - 1.d0)
-            END DO
+            IF ( iter1 == 1 ) THEN
+                new(1) = (4.d0*new(0) - old(0))/3.d0
+            ELSE
+                old(0) = new(0)
+                CALL update()
+                
+                ! Refine the estimate of the integral
+                fact = 1.d0
+                DO iter2 = 1,iter1
+                    fact = fact*base
+                    old(iter2) = new(iter2)
+                    new(iter2) = (fact*new(iter2-1) - old(iter2-1))/   &
+                                 (fact - 1.d0)
+                END DO
+            END IF
 
             ! Update errors
             error = 2.d0*ABS((new(iter1) - new(iter1-1))/((new(iter1)  &
