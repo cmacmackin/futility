@@ -1,0 +1,17 @@
+[default]
+help = Builds the Futility library using the gfortran compiler.
+compiler = Gnu
+mpi = False
+cflags = -c -Ofast -fPIC
+lflags = -Ofast -shared
+mod_dir = ./mod/
+obj_dir = ./bin/
+build_dir = ./
+src = ./src/
+colors = True
+mklib = shared
+target = futility.f90
+
+[rule-makedoc]
+help = Uses f90doc to produce documentation for the library.
+rule = rm -f doc/*; bin/f90doc/f90doc `find -path './src/*.f90' -type f`; mv *.html doc
