@@ -28,7 +28,7 @@ contains
     !
     !--------------------------------------------------------------------------!
     recursive subroutine differentiate( derivval, dxval, error, func, iter1,   &
-                                        nderiv, tol, xval, verbose )
+                                        nderiv, tol, xval, verbose ) 
         implicit none
         
         !! The function for which to calculate the derivative. Must return a 
@@ -185,7 +185,7 @@ contains
         !! The function (returning a real(8) value) whose integral is to be 
         !! calculated.
         interface
-            real(8) function func     ( x        )
+            real(8) function func     ( x        ) 
                 real(8), intent(in) ::  x
             end function func
         end interface

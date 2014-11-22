@@ -13,5 +13,5 @@ mklib = shared
 target = futility.f90
 
 [rule-makedoc]
-help = Uses f90doc to produce documentation for the library.
-rule = rm -f doc/*; bin/f90doc/f90doc `find -path './src/*.f90' -type f`; mv *.html doc
+help = Uses f03doc to produce documentation for the library.
+rule = rm -f doc/*; bin/f03doc/f03doc `find -path './src/*.f90' -type f`; mv *.html doc

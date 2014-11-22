@@ -20,7 +20,7 @@ end module rootfind
 <HR><H2> Description of Subroutines and Functions </H2>
 <A NAME="subroutine_bis_secant"><H3>bis_secant</H3></A>
 <PRE>public subroutine bis_secant (error, fnctn, maxerr, maxsteps, steps, verbose, xcur, xleft, xright)
-    real (kind=8), intent(out) :: error
+    real(kind=8), intent(out) :: error
 </PRE>
 <DL><DD><DL><DD>
  A real variable in which an estimate of the error in the computed 
@@ -28,8 +28,8 @@ end module rootfind
 </DL></DL>
 <PRE>    interface fnctn
         function fnctn (x)
-            real (kind=8), intent(in) :: x
-            real (kind=8) :: fnctn
+            real(kind=8), intent(in) :: x
+            real(kind=8) :: fnctn
         end function fnctn
     end interface fnctn
 </PRE>
@@ -37,7 +37,7 @@ end module rootfind
  The Fortran function for which the root will be found. Must take only 
  one real argument, return a real argument.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: maxerr
+<PRE>    real(kind=8), intent(in) :: maxerr
 </PRE>
 <DL><DD><DL><DD>
  A real value which specifies the the maximum allowable error in the 
@@ -63,18 +63,18 @@ end module rootfind
  stdout at each iteration. Also controls whether to print a warning 
  when maximum number of iterations reached.
 </DL></DL>
-<PRE>    real (kind=8), intent(out) :: xcur
+<PRE>    real(kind=8), intent(out) :: xcur
 </PRE>
 <DL><DD><DL><DD>
  A real variable in which the computed value of the root will be   
  returned.
 </DL></DL>
-<PRE>    real (kind=8), intent(inout) :: xleft
+<PRE>    real(kind=8), intent(inout) :: xleft
 </PRE>
 <DL><DD><DL><DD>
  A real value specifying lower bound within which to search for root.
 </DL></DL>
-<PRE>    real (kind=8), intent(inout) :: xright
+<PRE>    real(kind=8), intent(inout) :: xright
 </PRE>
 <DL><DD><DL><DD>
  A real value specifying upper bound within which to search for root.
@@ -87,13 +87,13 @@ end module rootfind
   iterations.                                    
 <A NAME="subroutine_global_bis_sec"><H3>global_bis_sec</H3></A>
 <PRE>public subroutine global_bis_sec (dx, error, fnctn, maxerr, maxsteps, numroots, roots, steps, verbose, xmax, xmin)
-    real (kind=8), intent(inout) :: dx
+    real(kind=8), intent(inout) :: dx
 </PRE>
 <DL><DD><DL><DD>
  The initial size of increment to use when examining function. 
  Minimum interval will be 0.01 of this.
 </DL></DL>
-<PRE>    real (kind=8), intent(out), dimension(:) :: error
+<PRE>    real(kind=8), intent(out), dimension(:) :: error
 </PRE>
 <DL><DD><DL><DD>
  A real array in which an estimate of the error in each computed root 
@@ -101,8 +101,8 @@ end module rootfind
 </DL></DL>
 <PRE>    interface fnctn
         function fnctn (x)
-            real (kind=8), intent(in) :: x
-            real (kind=8) :: fnctn
+            real(kind=8), intent(in) :: x
+            real(kind=8) :: fnctn
         end function fnctn
     end interface fnctn
 </PRE>
@@ -110,7 +110,7 @@ end module rootfind
  The Fortran function for which the root will be found. Must take 
  only one real argument, return a real argument.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: maxerr
+<PRE>    real(kind=8), intent(in) :: maxerr
 </PRE>
 <DL><DD><DL><DD>
  A real value which specifies the the maximum allowable error in the 
@@ -130,7 +130,7 @@ end module rootfind
  brackets were found. A negative number indicates that an error 
  occurred.
 </DL></DL>
-<PRE>    real (kind=8), intent(out), dimension(:) :: roots
+<PRE>    real(kind=8), intent(out), dimension(:) :: roots
 </PRE>
 <DL><DD><DL><DD>
  A real array in which the computed values of each root will be 
@@ -151,13 +151,13 @@ end module rootfind
  'globrack' routine and if maximum number of iterations reached while 
  finding root.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: xmax
+<PRE>    real(kind=8), intent(in) :: xmax
 </PRE>
 <DL><DD><DL><DD>
  The upper limit of the range on which the subroutine will search for
  roots and brackets.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: xmin
+<PRE>    real(kind=8), intent(in) :: xmin
 </PRE>
 <DL><DD><DL><DD>
  The lower limit of the range on which the subroutine will search for
@@ -172,21 +172,21 @@ end subroutine global_bis_sec
   bisection-secant root-finding algorithm.
 <A NAME="subroutine_global_brackets"><H3>global_brackets</H3></A>
 <PRE>public subroutine global_brackets (brackets, dx, fnctn, numroots, verbose, xmax, xmin)
-    real (kind=8), intent(out), dimension(:,:) :: brackets
+    real(kind=8), intent(out), dimension(:,:) :: brackets
 </PRE>
 <DL><DD><DL><DD>
  A 2 by n real array in which the left and right brackets will be 
  stored and returned. Will find up to n sets of brackets.
 </DL></DL>
-<PRE>    real (kind=8), intent(inout) :: dx
+<PRE>    real(kind=8), intent(inout) :: dx
 </PRE>
 <DL><DD><DL><DD>
  The initial size of increment to use when examining function. 
  Minimum interval will be 0.01 of this.
 </DL></DL>
 <PRE>    interface fnctn
-        real (kind=8) function fnctn (x)
-            real (kind=8), intent(in) :: x
+        real(kind=8) function fnctn (x)
+            real(kind=8), intent(in) :: x
         end function fnctn
     end interface fnctn
 </PRE>
@@ -208,13 +208,13 @@ The Fortran function for which the brackets will be found. Must take
  bracket values which are found and warning messages when 'dx' set to 
  'dxmin'.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: xmax
+<PRE>    real(kind=8), intent(in) :: xmax
 </PRE>
 <DL><DD><DL><DD>
  The upper limit of the range on which the subroutine will search for 
  roots and brackets.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: xmin
+<PRE>    real(kind=8), intent(in) :: xmin
 </PRE>
 <DL><DD><DL><DD>
  The lower limit of the range on which the subroutine will search for 

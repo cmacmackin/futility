@@ -115,7 +115,7 @@ CONTAINS
         real(8), intent(in), dimension(:)   ::  xvals
         !! A 1-dimensional array containing the dependent variable.
         real(8), intent(in), dimension(:)   ::  yvals
-        !! The return value of the subroutine. A value of 0 indicates that the 
+        !! The return code of the subroutine. A value of 0 indicates that the 
         !! subroutine executed as expected. A value of -1 indicates that the 
         !! matrix of coefficients passed to either linsolve() or lu_decomp() 
         !! was not square, as it should have been. A value of -2 indicates that 

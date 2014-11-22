@@ -19,45 +19,28 @@ end module linalg
 <HR><H2> Description of Subroutines and Functions </H2>
 <A NAME="subroutine_linsolve"><H3>linsolve</H3></A>
 <PRE>public subroutine linsolve (matrix, reval, vals)
-    real (kind=8), intent(in), dimension(:,:) :: matrix
+    real(kind=8), intent(in), dimension(:,:) :: matrix
 </PRE>
 <DL><DD><DL><DD>
  A square, 2-dimensional array, which is the LU factorization of the 
  matrix containing the coefficients of the linear system to be solved.
 </DL></DL>
 <PRE>    integer, intent(out) :: reval
-</PRE>
-<DL><DD><DL><DD>
- The return value of the subroutine. A value of 0 indicates that the 
- subroutine executed as expected. A value of -1 indicates that the 
- matrix of coefficients passed to either linsolve() or lu_decomp() 
- was not square, as it should have been. A value of -2 indicates that 
- the coeffs array passed to ls_fit() is not large enough to hold all 
- of the coefficients for the desired fit. A value of -3 means that 
- there is insufficient data for ls_fit() to fit a polynomial of the 
- desired order.
-</DL></DL>
-<PRE>    real (kind=8), intent(inout), dimension(size(matrix,1)) :: vals
-</PRE>
-<DL><DD><DL><DD>
- A 1-dimensional array containing the right-hand-side of each 
- equation in the linear system. It is in this array that the solution 
- will be returned.
-</DL></DL>
-<PRE>end subroutine linsolve
+    real(kind=8), intent(inout), dimension(size(matrix,1)) :: vals
+end subroutine linsolve
 </PRE>
   Solves a system of linear equations using the (pre-computed) LU
   decomposition of the matrix describing the system. The decomposition can 
   be computed using the subroutine lu_decomp(), below.
 <A NAME="subroutine_ls_fit"><H3>ls_fit</H3></A>
 <PRE>public subroutine ls_fit (coeffs, lsval, order, reval, xvals, yvals)
-    real (kind=8), intent(out), dimension(:) :: coeffs
+    real(kind=8), intent(out), dimension(:) :: coeffs
 </PRE>
 <DL><DD><DL><DD>
  A 1-dimensional array with a length of at least 'order,' in which 
  the coefficients of the fit will be returned.
 </DL></DL>
-<PRE>    real (kind=8), intent(out) :: lsval
+<PRE>    real(kind=8), intent(out) :: lsval
 </PRE>
 <DL><DD><DL><DD>
  The square difference values (error) of the fit.
@@ -70,7 +53,7 @@ end module linalg
 <PRE>    integer, intent(out) :: reval
 </PRE>
 <DL><DD><DL><DD>
- The return value of the subroutine. A value of 0 indicates that the 
+ The return code of the subroutine. A value of 0 indicates that the 
  subroutine executed as expected. A value of -1 indicates that the 
  matrix of coefficients passed to either linsolve() or lu_decomp() 
  was not square, as it should have been. A value of -2 indicates that 
@@ -79,12 +62,12 @@ end module linalg
  there is insufficient data for ls_fit() to fit a  polynomial of the 
  desired order.
 </DL></DL>
-<PRE>    real (kind=8), intent(in), dimension(:) :: xvals
+<PRE>    real(kind=8), intent(in), dimension(:) :: xvals
 </PRE>
 <DL><DD><DL><DD>
  A 1-dimensional array containing the independent variable.
 </DL></DL>
-<PRE>    real (kind=8), intent(in), dimension(:) :: yvals
+<PRE>    real(kind=8), intent(in), dimension(:) :: yvals
 </PRE>
 <DL><DD><DL><DD>
  A 1-dimensional array containing the dependent variable.
@@ -95,7 +78,7 @@ end subroutine ls_fit
   Finds the least-square polynomial fit for a set of data.
 <A NAME="subroutine_lu_decomp"><H3>lu_decomp</H3></A>
 <PRE>public subroutine lu_decomp (matrix, reval)
-    real (kind=8), intent(inout), dimension(:,:) :: matrix
+    real(kind=8), intent(inout), dimension(:,:) :: matrix
 </PRE>
 <DL><DD><DL><DD>
  A square, 2-dimensional array, which is to be factored. The 

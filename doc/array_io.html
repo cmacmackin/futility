@@ -7,12 +7,12 @@
 
         ! Variables
     character, private :: <A HREF="array_io.html#var_com_char">com_char</A> = '#'
-    character (len=64), private, parameter :: <A HREF="array_io.html#var_allocate_err">allocate_err</A> = '("ARRAY_IO: Array already allocated and NOCLOBBER specified.")'
-    character (len=64), private, parameter :: <A HREF="array_io.html#var_empty_err">empty_err</A> = '("ARRAY_IO: No data in file ",a,".")'
-    character (len=64), private, parameter :: <A HREF="array_io.html#var_open_err">open_err</A> = '("ARRAY_IO: Problem when opening file. Error code ",I0,".")'
-    character (len=64), private, parameter :: <A HREF="array_io.html#var_read_err">read_err</A> = '("ARRAY_IO: Problem reading from file. Error code ",I0,".")'
-    character (len=64), private, parameter :: <A HREF="array_io.html#var_write_err">write_err</A> = '("ARRAY_IO: Problem writing to file. Error code ",I0,".")'
-    character (len=128), private, parameter :: <A HREF="array_io.html#var_clob_err">clob_err</A> = '("ARRAY_IO: Unrecognized CLOBBER specification. Please select ''clobber'',",/,"ARRAY_IO: ''noclobber'', or ''append''.")'
+    character(len=64), private, parameter :: <A HREF="array_io.html#var_allocate_err">allocate_err</A> = '("ARRAY_IO: Array already allocated and NOCLOBBER specified.")'
+    character(len=64), private, parameter :: <A HREF="array_io.html#var_empty_err">empty_err</A> = '("ARRAY_IO: No data in file ",a,".")'
+    character(len=64), private, parameter :: <A HREF="array_io.html#var_open_err">open_err</A> = '("ARRAY_IO: Problem when opening file. Error code ",I0,".")'
+    character(len=64), private, parameter :: <A HREF="array_io.html#var_read_err">read_err</A> = '("ARRAY_IO: Problem reading from file. Error code ",I0,".")'
+    character(len=64), private, parameter :: <A HREF="array_io.html#var_write_err">write_err</A> = '("ARRAY_IO: Problem writing to file. Error code ",I0,".")'
+    character(len=128), private, parameter :: <A HREF="array_io.html#var_clob_err">clob_err</A> = '("ARRAY_IO: Unrecognized CLOBBER specification. Please select ''clobber'',",/,"ARRAY_IO: ''noclobber'', or ''append''.")'
     integer, private, parameter :: <A HREF="array_io.html#var_io_unit">io_unit</A> = 90
     integer, private, parameter :: <A HREF="array_io.html#var_line_len">line_len</A> = 1024
     integer, private, parameter :: <A HREF="array_io.html#var_stderr">stderr</A> = 0
@@ -66,22 +66,22 @@ end module array_io
 <PRE>character, private :: com_char = '#'
 </PRE>
 <A NAME="var_allocate_err"><H3>allocate_err</H3></A>
-<PRE>character (len=64), private, parameter :: allocate_err = '("ARRAY_IO: Array already allocated and NOCLOBBER specified.")'
+<PRE>character(len=64), private, parameter :: allocate_err = '("ARRAY_IO: Array already allocated and NOCLOBBER specified.")'
 </PRE>
 <A NAME="var_empty_err"><H3>empty_err</H3></A>
-<PRE>character (len=64), private, parameter :: empty_err = '("ARRAY_IO: No data in file ",a,".")'
+<PRE>character(len=64), private, parameter :: empty_err = '("ARRAY_IO: No data in file ",a,".")'
 </PRE>
 <A NAME="var_open_err"><H3>open_err</H3></A>
-<PRE>character (len=64), private, parameter :: open_err = '("ARRAY_IO: Problem when opening file. Error code ",I0,".")'
+<PRE>character(len=64), private, parameter :: open_err = '("ARRAY_IO: Problem when opening file. Error code ",I0,".")'
 </PRE>
 <A NAME="var_read_err"><H3>read_err</H3></A>
-<PRE>character (len=64), private, parameter :: read_err = '("ARRAY_IO: Problem reading from file. Error code ",I0,".")'
+<PRE>character(len=64), private, parameter :: read_err = '("ARRAY_IO: Problem reading from file. Error code ",I0,".")'
 </PRE>
 <A NAME="var_write_err"><H3>write_err</H3></A>
-<PRE>character (len=64), private, parameter :: write_err = '("ARRAY_IO: Problem writing to file. Error code ",I0,".")'
+<PRE>character(len=64), private, parameter :: write_err = '("ARRAY_IO: Problem writing to file. Error code ",I0,".")'
 </PRE>
 <A NAME="var_clob_err"><H3>clob_err</H3></A>
-<PRE>character (len=128), private, parameter :: clob_err = '("ARRAY_IO: Unrecognized CLOBBER specification. Please select ''clobber'',",/,"ARRAY_IO: ''noclobber'', or ''append''.")'
+<PRE>character(len=128), private, parameter :: clob_err = '("ARRAY_IO: Unrecognized CLOBBER specification. Please select ''clobber'',",/,"ARRAY_IO: ''noclobber'', or ''append''.")'
 </PRE>
 <A NAME="var_io_unit"><H3>io_unit</H3></A>
 <PRE>integer, private, parameter :: io_unit = 90
@@ -158,18 +158,18 @@ end interface savetxt
   IO unit 90. Doesn't count lines with no data or entirely commented out.
 <A NAME="subroutine_loadtxt_dynamic_i1"><H3>loadtxt_dynamic_i1</H3></A>
 <PRE>private subroutine loadtxt_dynamic_i1 (filename, i1array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    integer (kind=int8), allocatable, dimension(:,:), intent(inout) :: i1array_dyn
+<PRE>    integer(kind=int8), allocatable, dimension(:,:), intent(inout) :: i1array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file. 
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -194,18 +194,18 @@ end subroutine loadtxt_dynamic_i1
   array.
 <A NAME="subroutine_loadtxt_dynamic_i2"><H3>loadtxt_dynamic_i2</H3></A>
 <PRE>private subroutine loadtxt_dynamic_i2 (filename, i2array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    integer (kind=int16), allocatable, dimension(:,:), intent(inout) :: i2array_dyn
+<PRE>    integer(kind=int16), allocatable, dimension(:,:), intent(inout) :: i2array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -226,18 +226,18 @@ end subroutine loadtxt_dynamic_i2
   array.
 <A NAME="subroutine_loadtxt_dynamic_i4"><H3>loadtxt_dynamic_i4</H3></A>
 <PRE>private subroutine loadtxt_dynamic_i4 (filename, i4array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    integer (kind=int32), allocatable, dimension(:,:), intent(inout) :: i4array_dyn
+<PRE>    integer(kind=int32), allocatable, dimension(:,:), intent(inout) :: i4array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -257,18 +257,18 @@ end subroutine loadtxt_dynamic_i4
   Reads in a 4 byte integer 2D array of unknown size into an allocatable !!  array
 <A NAME="subroutine_loadtxt_dynamic_i8"><H3>loadtxt_dynamic_i8</H3></A>
 <PRE>private subroutine loadtxt_dynamic_i8 (filename, i8array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    integer (kind=int64), allocatable, dimension(:,:), intent(inout) :: i8array_dyn
+<PRE>    integer(kind=int64), allocatable, dimension(:,:), intent(inout) :: i8array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -289,18 +289,18 @@ end subroutine loadtxt_dynamic_i8
   allocatable array.
 <A NAME="subroutine_loadtxt_dynamic_r4"><H3>loadtxt_dynamic_r4</H3></A>
 <PRE>private subroutine loadtxt_dynamic_r4 (filename, r4array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    real (kind=real32), allocatable, dimension(:,:), intent(inout) :: r4array_dyn
+<PRE>    real(kind=real32), allocatable, dimension(:,:), intent(inout) :: r4array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -321,18 +321,18 @@ end subroutine loadtxt_dynamic_r4
  allocatable array.
 <A NAME="subroutine_loadtxt_dynamic_r8"><H3>loadtxt_dynamic_r8</H3></A>
 <PRE>private subroutine loadtxt_dynamic_r8 (filename, r8array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    real (kind=real64), allocatable, dimension(:,:), intent(inout) :: r8array_dyn
+<PRE>    real(kind=real64), allocatable, dimension(:,:), intent(inout) :: r8array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -353,18 +353,18 @@ end subroutine loadtxt_dynamic_r8
   allocatable array.
 <A NAME="subroutine_loadtxt_dynamic_r16"><H3>loadtxt_dynamic_r16</H3></A>
 <PRE>private subroutine loadtxt_dynamic_r16 (filename, r16array_dyn, clobber, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    real (kind=real128), allocatable, dimension(:,:), intent(inout) :: r16array_dyn
+<PRE>    real(kind=real128), allocatable, dimension(:,:), intent(inout) :: r16array_dyn
 </PRE>
 <DL><DD><DL><DD>
  The allocatable array which is to be filled with data read in from 
  the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite array if already allocated. Options 
@@ -385,12 +385,12 @@ end subroutine loadtxt_dynamic_r16
   array.
 <A NAME="subroutine_loadtxt_static_i1"><H3>loadtxt_static_i1</H3></A>
 <PRE>private subroutine loadtxt_static_i1 (filename, i1array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array.
 </DL></DL>
-<PRE>    integer (kind=int8), dimension(:,:), intent(out) :: i1array
+<PRE>    integer(kind=int8), dimension(:,:), intent(out) :: i1array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -419,12 +419,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_i2"><H3>loadtxt_static_i2</H3></A>
 <PRE>private subroutine loadtxt_static_i2 (filename, i2array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    integer (kind=int16), dimension(:,:), intent(out) :: i2array
+<PRE>    integer(kind=int16), dimension(:,:), intent(out) :: i2array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -447,12 +447,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_i4"><H3>loadtxt_static_i4</H3></A>
 <PRE>private subroutine loadtxt_static_i4 (filename, i4array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    integer (kind=int32), dimension(:,:), intent(out) :: i4array
+<PRE>    integer(kind=int32), dimension(:,:), intent(out) :: i4array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -475,12 +475,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_i8"><H3>loadtxt_static_i8</H3></A>
 <PRE>private subroutine loadtxt_static_i8 (filename, i8array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    integer (kind=int64), dimension(:,:), intent(out) :: i8array
+<PRE>    integer(kind=int64), dimension(:,:), intent(out) :: i8array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -503,12 +503,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_r4"><H3>loadtxt_static_r4</H3></A>
 <PRE>private subroutine loadtxt_static_r4 (filename, r4array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    real (kind=real32), dimension(:,:), intent(out) :: r4array
+<PRE>    real(kind=real32), dimension(:,:), intent(out) :: r4array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -531,12 +531,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_r8"><H3>loadtxt_static_r8</H3></A>
 <PRE>private subroutine loadtxt_static_r8 (filename, r8array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    real (kind=real64), dimension(:,:), intent(out) :: r8array
+<PRE>    real(kind=real64), dimension(:,:), intent(out) :: r8array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -559,12 +559,12 @@ end subroutine loadtxt_dynamic_r16
   because the array was too small.
 <A NAME="subroutine_loadtxt_static_r16"><H3>loadtxt_static_r16</H3></A>
 <PRE>private subroutine loadtxt_static_r16 (filename, r16array, nrows, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file from which to read in the array. 
 </DL></DL>
-<PRE>    real (kind=real128), dimension(:,:), intent(out) :: r16array
+<PRE>    real(kind=real128), dimension(:,:), intent(out) :: r16array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be filled with values read in from the file.
@@ -597,18 +597,18 @@ end subroutine loadtxt_dynamic_r16
   Sets the character which designates a comment in input files.
 <A NAME="subroutine_savetxt_i1"><H3>savetxt_i1</H3></A>
 <PRE>private subroutine savetxt_i1 (filename, i1array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    integer (kind=int8), dimension(:,:), target, intent(in) :: i1array
+<PRE>    integer(kind=int8), dimension(:,:), target, intent(in) :: i1array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -616,7 +616,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -635,18 +635,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out a 1 byte integer 2D array.
 <A NAME="subroutine_savetxt_i2"><H3>savetxt_i2</H3></A>
 <PRE>private subroutine savetxt_i2 (filename, i2array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    integer (kind=int16), dimension(:,:), target, intent(in) :: i2array
+<PRE>    integer(kind=int16), dimension(:,:), target, intent(in) :: i2array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -654,7 +654,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -671,18 +671,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out a 2 byte integer 2D array.
 <A NAME="subroutine_savetxt_i4"><H3>savetxt_i4</H3></A>
 <PRE>private subroutine savetxt_i4 (filename, i4array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    integer (kind=int32), dimension(:,:), target, intent(in) :: i4array
+<PRE>    integer(kind=int32), dimension(:,:), target, intent(in) :: i4array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -690,7 +690,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -707,18 +707,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out a 4 byte integer 2D array.
 <A NAME="subroutine_savetxt_i8"><H3>savetxt_i8</H3></A>
 <PRE>private subroutine savetxt_i8 (filename, i8array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    integer (kind=int64), dimension(:,:), target, intent(in) :: i8array
+<PRE>    integer(kind=int64), dimension(:,:), target, intent(in) :: i8array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -726,7 +726,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -743,18 +743,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out an 8 byte integer 2D array.
 <A NAME="subroutine_savetxt_r4"><H3>savetxt_r4</H3></A>
 <PRE>private subroutine savetxt_r4 (filename, r4array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    real (kind=real32), dimension(:,:), target, intent(in) :: r4array
+<PRE>    real(kind=real32), dimension(:,:), target, intent(in) :: r4array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -762,7 +762,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -779,18 +779,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out a single precision 2D array.
 <A NAME="subroutine_savetxt_r8"><H3>savetxt_r8</H3></A>
 <PRE>private subroutine savetxt_r8 (filename, r8array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    real (kind=real64), dimension(:,:), target, intent(in) :: r8array
+<PRE>    real(kind=real64), dimension(:,:), target, intent(in) :: r8array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -798,7 +798,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 
@@ -815,18 +815,18 @@ end subroutine loadtxt_dynamic_r16
   Writes out a double precision 2D array.
 <A NAME="subroutine_savetxt_r16"><H3>savetxt_r16</H3></A>
 <PRE>private subroutine savetxt_r16 (filename, r16array, clobber, user_format, errval)
-    character (len=*), intent(in) :: filename
+    character(len=*), intent(in) :: filename
 </PRE>
 <DL><DD><DL><DD>
  The file to which to write in the array. If it is 'stdout' then 
  writes to terminal instead of file.
 </DL></DL>
-<PRE>    real (kind=real128), dimension(:,:), target, intent(in) :: r16array
+<PRE>    real(kind=real128), dimension(:,:), target, intent(in) :: r16array
 </PRE>
 <DL><DD><DL><DD>
  The array which is to be written to the file.
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: clobber
+<PRE>    character(len=*), optional, intent(in) :: clobber
 </PRE>
 <DL><DD><DL><DD>
  Determines whether to overwrite existing files. Options are 
@@ -834,7 +834,7 @@ end subroutine loadtxt_dynamic_r16
  error if file exists), and 'append' (append output to file if 
  exists).
 </DL></DL>
-<PRE>    character (len=*), optional, intent(in) :: user_format
+<PRE>    character(len=*), optional, intent(in) :: user_format
 </PRE>
 <DL><DD><DL><DD>
  A format string which can be used to provide a custom specification 

@@ -21,24 +21,24 @@ end module calculus
 <HR><H2> Description of Subroutines and Functions </H2>
 <A NAME="subroutine_differentiate"><H3>differentiate</H3></A>
 <PRE>public recursive subroutine differentiate (derivval, dxval, error, func, iter1, nderiv, tol, xval, verbose)
-    real (kind=8), intent(out) :: derivval
+    real(kind=8), intent(out) :: derivval
 </PRE>
 <DL><DD><DL><DD>
  The computed value of the derivative.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: dxval
+<PRE>    real(kind=8), intent(in) :: dxval
 </PRE>
 <DL><DD><DL><DD>
  The initial value to use for computing the finite difference.
 </DL></DL>
-<PRE>    real (kind=8), intent(out) :: error
+<PRE>    real(kind=8), intent(out) :: error
 </PRE>
 <DL><DD><DL><DD>
  An estimate of the error in the computed derivative.
 </DL></DL>
 <PRE>    interface func
-        real (kind=8) function func (x)
-            real (kind=8), intent(in) :: x
+        real(kind=8) function func (x)
+            real(kind=8), intent(in) :: x
         end function func
     end interface func
 </PRE>
@@ -56,13 +56,13 @@ end module calculus
 <DL><DD><DL><DD>
  What derivative to take.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: tol
+<PRE>    real(kind=8), intent(in) :: tol
 </PRE>
 <DL><DD><DL><DD>
  The desired accuracy with which to compute the derivative to the 
  desired accuracy.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: xval
+<PRE>    real(kind=8), intent(in) :: xval
 </PRE>
 <DL><DD><DL><DD>
  The value of <I>x</I> at which to calculate the derivative of function 
@@ -84,19 +84,19 @@ end subroutine differentiate
               Adapted from a FORTRAN77 routine by Dr. David A. Clarke. 
 <A NAME="subroutine_romberg"><H3>romberg</H3></A>
 <PRE>public subroutine romberg (intval, error, func, iter1, left, numcalls, right, tol, verbose)
-    real (kind=8), intent(out) :: intval
+    real(kind=8), intent(out) :: intval
 </PRE>
 <DL><DD><DL><DD>
  The value calculated for the definite integral.
 </DL></DL>
-<PRE>    real (kind=8), intent(out) :: error
+<PRE>    real(kind=8), intent(out) :: error
 </PRE>
 <DL><DD><DL><DD>
  An estimate of the error in the computed integral.
 </DL></DL>
 <PRE>    interface func
-        real (kind=8) function func (x)
-            real (kind=8), intent(in) :: x
+        real(kind=8) function func (x)
+            real(kind=8), intent(in) :: x
         end function func
     end interface func
 </PRE>
@@ -110,7 +110,7 @@ end subroutine differentiate
  The number of iterations required to calculate the integral to the 
  desired precision.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: left
+<PRE>    real(kind=8), intent(in) :: left
 </PRE>
 <DL><DD><DL><DD>
  The lower limit of integration.
@@ -121,12 +121,12 @@ end subroutine differentiate
  The number of function calls needed to calculate the integral to the 
  desired precision.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: right
+<PRE>    real(kind=8), intent(in) :: right
 </PRE>
 <DL><DD><DL><DD>
  The upper limit of integration.
 </DL></DL>
-<PRE>    real (kind=8), intent(in) :: tol
+<PRE>    real(kind=8), intent(in) :: tol
 </PRE>
 <DL><DD><DL><DD>
  The desired accuracy to which to calculate the integral.
